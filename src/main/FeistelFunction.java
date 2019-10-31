@@ -9,6 +9,6 @@ package main;
  *
  * @author cen62777
  */
-public class FunctionF {
+public class FeistelFunction {
     
 }
