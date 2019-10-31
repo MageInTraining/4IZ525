@@ -14,14 +14,10 @@ import java.util.List;
  */
 public class Main{
     
-    static String message = "This is a plaintext message, my friends!";
+    static String message = "This is a plaintext message, my friends! :)";
     
     public static void main(String[] args){
-        hexToBin("00");
-        System.out.println(plainToHex("oj"));
-        System.out.println(Integer.parseInt("1111", 2));
-        System.out.println(Integer.toHexString(15));
-        System.out.println(hexToPlain("6A"));
+        System.out.println(hexToPlain(binToHex(joinBlocks(splitToBlocks(hexToBin(plainToHex(message)))))));
     }
     
     static String plainToHex(String message){
@@ -48,18 +44,26 @@ public class Main{
     }
     
     static String binToHex(List<Boolean> bitList){
-        String bitString = bitList.toString();
-        StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < bitList.size(); i = i+4){
-            int x = Integer.parseInt(bitString.substring(i, i+3), 2);
-            builder.append(Integer.toHexString(x));
+        StringBuilder intBuilder = new StringBuilder();
+        for(boolean b:bitList){
+            if(b==true){
+               intBuilder.append(1);
+            }else{
+               intBuilder.append(0); 
+            }
         }
-        return builder.toString();
+        String bitString = intBuilder.toString();
+        StringBuilder hexBuilder = new StringBuilder();
+        for(int i = 0; i < bitList.size(); i = i+4){
+            int x = Integer.parseInt(bitString.substring(i, i+4), 2);
+            hexBuilder.append(Integer.toHexString(x));
+        }
+        return hexBuilder.toString();
     }
     
     static String hexToPlain(String hexMessage){
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < hexMessage.length(); i+=2) {
+        for (int i = 0; i < hexMessage.length(); i= i + 2) {
             String str = hexMessage.substring(i, i+2);
             builder.append((char)Integer.parseInt(str, 16));
         }
@@ -68,10 +72,9 @@ public class Main{
     
     static List<boolean[]> splitToBlocks(List<Boolean> input){
         if(input.size()%64 != 0){
-            int indexOfSet = input.size() + 1;
             int toAdd = 64 - input.size()%64;
             for(int i = 0; i < toAdd; i++){
-                input.set(indexOfSet, Math.random() < 5);
+                input.add( Math.random() < 0.5);
             }
         }
         List<boolean[]> output = new ArrayList<>();
