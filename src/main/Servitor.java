@@ -64,108 +64,63 @@ public class Servitor {
         return builder.toString();
     }
     
-    public static List<boolean[]> splitToBlocks(List<Boolean> input){
+    public static List<List<Boolean>> splitToBlocks(List<Boolean> input){
+        
+        //add random values to reach block size of 64 bit
         if(input.size()%64 != 0){
             int toAdd = 64 - input.size()%64;
             for(int i = 0; i < toAdd; i++){
                 input.add( Math.random() < 0.5);
             }
         }
-        List<boolean[]> output = new ArrayList<>();
+        
+        List<List<Boolean>> output = new ArrayList<>();
         int numberOfBlocks = input.size()/64;
         int index = 0;
+        
+        //create a list for each 64-bit block
         for(int i = 0; i < numberOfBlocks; i++){
-            boolean[] bArray = new boolean[64];
+            
+            List<Boolean> bArray = new ArrayList<>();
+            
+            //transfer part of payload from input list into block list
             for(int j = 0; j < 64; j++){
-                bArray[j] = input.get(index);
+                bArray.add(input.get(index));
                 index++;
             }
+            
+            //add block list to list of blocks
             output.add(bArray);
         }
         return output;
     }
     
-    public static boolean[] permutation(boolean[] input, int[] table){
-        boolean[] output = new boolean[table.length];
-        for(int i:table){
-            output[i] = input[table[i]];
-        }
-        return output;
-    }
-    
-    public static List<Boolean> joinBlocks(List<boolean[]> input){
+    public static List<Boolean> joinBlocks(List<List<Boolean>> input){
+        
         List<Boolean> output = new ArrayList<>();
-        for(boolean[] ba:input){
+        
+        //do for each block list
+        for(List<Boolean> bl:input){
+            
+            //go over entire block payload
             for(int i =0; i < 64; i++){
-                output.add(ba[i]);
+                
+                //extract block payload into output list
+                output.add(bl.get(i));
             }
         }
         return output;
     }
     
-    public static boolean[] permute(boolean[] inputArray, int[] table){
-        
-        boolean[] outputArray = null;
-        
-        for(int i = 0; i< table.length; i++){
-            outputArray[i] = inputArray[table[i]];
-        }
-        return outputArray;
-    }
+    public static void permutation(){}
     
-    public static boolean[] doXOR(boolean[] a, boolean[] b){
-        boolean[] output = null;
-        for(int i = 0; i < a.length; i++){
-            output[i]= ((a[i] && !b[i]) || (!a[i] && b[i]));
-        }
-        return output;
-    }
+    public static void permute(){}
     
-    public static boolean[] doShift(boolean[] key, int shiftBy){
-        boolean[] helper = key;
-        for(int i = 0; i < key.length; i++){
-            if((i - shiftBy)>= 0){
-                key[i]=helper[i - shiftBy];
-            }else{
-                key[i] = helper[key.length-shiftBy-1];
-            }
-        }
-        return key;
-    }
+    public static void doXOR(){}
     
-    public static int BoolValue(boolean input){
-        return input ? 1 : 0;
-    }
+    public static void doShift(){}
     
-    public static List<Boolean> useSBox(boolean[] input, int[][] sbox){
-        
-        StringBuilder sb1 = new StringBuilder();
-        
-        sb1.append(BoolValue(input[0]));
-        sb1.append(BoolValue(input[5]));
-        
-        int row = Integer.parseInt(sb1.toString(), 2);
-        
-        StringBuilder sb2 = new StringBuilder();
-        
-        sb2.append(BoolValue(input[1]));
-        sb2.append(BoolValue(input[2]));
-        sb2.append(BoolValue(input[3]));
-        sb2.append(BoolValue(input[4]));
-        
-        int column = Integer.parseInt(sb2.toString(), 2);
-        
-        char[] cArray = Integer.toBinaryString(sbox[row][column]).toCharArray();
-        List<Boolean> output = new ArrayList<>();
-        
-        for(int i = 0; i < 4; i++){
-            if(cArray[i]=='0'){
-                output.add(false);
-            }else{
-                output.add(true);
-            }
-        }
-        return output;
-    }
+    public static void BoolValue(Boolean input){}
     
+    public static void useSBox(Boolean[] input, int[][] sbox){}
 }

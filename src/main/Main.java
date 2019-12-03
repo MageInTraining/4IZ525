@@ -42,41 +42,8 @@ public class Main{
 //            );
     }
     
-    public static List<boolean[]> mainSequence(List<boolean[]> inputList
-            , boolean[] key){
+    public static void mainSequence(List<List<Boolean>> inputList
+            , List<Boolean> key){
         
-        //For each message block of 64 bit lenght this will be done:
-        for(boolean[] bArray:inputList){
-            
-            boolean[] left = null;
-            boolean[] right = null;
-            
-            // Initial permutation
-            boolean[] rightAndLeft = permute(bArray, INITIAL_PERMUTATION);
-            
-            // Split into Left and Right block
-            for(int i = 0; i < 32; i++){
-                left[i] = rightAndLeft[i];
-                right[32+i] = rightAndLeft[32+i];
-            }
-            
-            //initial key permutation
-            boolean[] permutedKey = permute(key, PC_1);
-            
-            boolean[] c = null;
-            boolean[] d = null;
-            
-            // Split into c and a key blocks
-            for(int i = 0; i < 32; i++){
-                c[i] = permutedKey[i];
-                d[32+i] = permutedKey[32+i];
-            }
-            
-            //perform one round
-            Round.doOneRound(left, right, 1, c, d);
-        }
-        return null;
-    }
-    
-    
+    } 
 }
