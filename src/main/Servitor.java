@@ -121,4 +121,51 @@ public class Servitor {
         return output;
     }
     
+    public static boolean[] doShift(boolean[] key, int shiftBy){
+        boolean[] helper = key;
+        for(int i = 0; i < key.length; i++){
+            if((i - shiftBy)>= 0){
+                key[i]=helper[i - shiftBy];
+            }else{
+                key[i] = helper[key.length-shiftBy-1];
+            }
+        }
+        return key;
+    }
+    
+    public static int BoolValue(boolean input){
+        return input ? 1 : 0;
+    }
+    
+    public static List<Boolean> useSBox(boolean[] input, int[][] sbox){
+        
+        StringBuilder sb1 = new StringBuilder();
+        
+        sb1.append(BoolValue(input[0]));
+        sb1.append(BoolValue(input[5]));
+        
+        int row = Integer.parseInt(sb1.toString(), 2);
+        
+        StringBuilder sb2 = new StringBuilder();
+        
+        sb2.append(BoolValue(input[1]));
+        sb2.append(BoolValue(input[2]));
+        sb2.append(BoolValue(input[3]));
+        sb2.append(BoolValue(input[4]));
+        
+        int column = Integer.parseInt(sb2.toString(), 2);
+        
+        char[] cArray = Integer.toBinaryString(sbox[row][column]).toCharArray();
+        List<Boolean> output = new ArrayList<>();
+        
+        for(int i = 0; i < 4; i++){
+            if(cArray[i]=='0'){
+                output.add(false);
+            }else{
+                output.add(true);
+            }
+        }
+        return output;
+    }
+    
 }

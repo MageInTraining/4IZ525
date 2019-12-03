@@ -44,7 +44,7 @@ public class Permutations {
         24,	25,	26,	27,	28,	29,
         28,	29,	30,	31,	32,	1
     };
-    public int[] P_PERMUTATION =
+    public static int[] P_PERMUTATION =
     {
         16,	7,	20,	21,
         29,	12,	28,	17,
@@ -55,7 +55,7 @@ public class Permutations {
         19,	13,	30,	6,
         22,	11,	4,	25
     };
-    public int[] PC_1 = 
+    public static int[] PC_1 = 
     {
         57, 49, 41, 33, 25, 17, 9,
         1,  58, 50, 42, 34, 26, 18,
@@ -66,7 +66,7 @@ public class Permutations {
         14, 6,  61, 53, 45, 37, 29,
         21, 13, 5,  28, 20, 12, 4
     };
-    public int[] PC_2 =
+    public static int[] PC_2 =
     {
         14, 17, 11, 24, 1,  5,
         3,  28, 15, 6,  21, 10,
