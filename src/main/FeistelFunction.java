@@ -5,10 +5,19 @@
  */
 package main;
 
+import static main.Servitor.permute;
+import static tables.Permutations.EXPANSION;
+
 /**
  *
  * @author cen62777
  */
 public class FeistelFunction {
     
+    public static boolean [] doFeistelFunction(boolean[] right, boolean[] key
+            , int roundNumber){
+        
+        boolean[] x = permute(right, EXPANSION);
+        return null;
+    }
 }
