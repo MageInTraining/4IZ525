@@ -6,7 +6,23 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import static tables.Permutations.EXPANSION;
+import static tables.Permutations.PC_2;
+import static tables.Permutations.P_PERMUTATION;
+import static tables.SBoxes.S_BOX_1;
+import static tables.SBoxes.S_BOX_2;
+import static tables.SBoxes.S_BOX_3;
+import static tables.SBoxes.S_BOX_4;
+import static tables.SBoxes.S_BOX_5;
+import static tables.SBoxes.S_BOX_6;
+import static tables.SBoxes.S_BOX_7;
+import static tables.SBoxes.S_BOX_8;
+import tables.Shifts;
+import static tables.Shifts.SHIFTS;
 
 /**
  *
@@ -112,15 +128,128 @@ public class Servitor {
         return output;
     }
     
-    public static void permutation(){}
+    public static List<Boolean> doPermute(List<Boolean> input, int[] table){
+        
+        List<Boolean> output = new ArrayList<>();
+        
+        for(int i: table){
+            output.add(input.get(i-1));
+        }
+        return output;
+    }
     
-    public static void permute(){}
+    public static List<Boolean> updateKey(List<Boolean> leftKey
+            , List<Boolean> rightKey, int roundNumber){
+        
+        //update both sides of a key
+        leftKey = doShift(leftKey, SHIFTS[roundNumber]);
+        rightKey = doShift(rightKey, SHIFTS[roundNumber]);
+        
+        //create round key basis
+        List<Boolean> roundKey = leftKey;
+        roundKey.addAll(rightKey);
+        
+        //return permuted basis - the actual round key
+        Main.leftKey = leftKey;
+        Main.rightKey = rightKey;
+        return doPermute(roundKey, PC_2);
+    }
     
-    public static void doXOR(){}
+    public static List<Boolean> doShift(List<Boolean> list, int shiftBy){
+        
+//        Collections.rotate(list, -shiftBy);
+        List<Boolean> helperList = new ArrayList<>();
+        for(int j = 0; j < list.size(); j++){
+            if((j-shiftBy)>=0){
+                helperList.add(list.get(j-shiftBy));
+            }else{
+                helperList.add(list.get(list.size()-shiftBy));
+            }
+        }
+        return helperList;
+//        return list;
+    }
     
-    public static void doShift(){}
+    public static void doRound(List<Boolean> leftSide, List<Boolean> rightSide
+            , List<Boolean> roundKey){
+        
+        List<Boolean> rightHelper = Main.rightSide;
+        Main.rightSide = doXOR(leftSide, doFeistelFunction(Main.rightSide, roundKey));
+        Main.leftSide= rightHelper;
+    }
     
-    public static void BoolValue(Boolean input){}
+    public static List<Boolean> doFeistelFunction(List<Boolean> rightSide
+            , List<Boolean> roundKey){
+        
+        rightSide = doPermute(rightSide, EXPANSION);
+        
+        List<Boolean> sBoxInput= doXOR(rightSide, roundKey);
+        
+        return doPermute(useSBoxes(sBoxInput), P_PERMUTATION);
+    }
     
-    public static void useSBox(Boolean[] input, int[][] sbox){}
+    public static List<Boolean> doXOR(List<Boolean> rightSide
+            , List<Boolean> roundKey){
+        
+        List<Boolean> output = new ArrayList<>();
+        
+        for(int i = 0; i< Main.rightSide.size()-1; i++){
+            output.add(! Main.rightSide.get(i).equals(roundKey.get(i)));
+        }
+        
+        return output;
+    }
+    
+    public static List<Boolean> useSBoxes(List<Boolean> input){
+        
+        List<Boolean> output = new ArrayList<>();
+        
+        output.addAll(useSBox(S_BOX_1, input, 0));
+        output.addAll(useSBox(S_BOX_2, input, 6));
+        output.addAll(useSBox(S_BOX_3, input, 12));
+        output.addAll(useSBox(S_BOX_4, input, 18));
+        output.addAll(useSBox(S_BOX_5, input, 24));
+        output.addAll(useSBox(S_BOX_6, input, 30));
+        output.addAll(useSBox(S_BOX_7, input, 36));
+        output.addAll(useSBox(S_BOX_8, input, 42));
+        
+        return output;
+    }
+
+    private static List<Boolean> useSBox(int[][] sBox, List<Boolean> input
+            , int i) {
+        
+//        int row = Integer.parseInt(
+//                booleanToBin(input.get(i)).toString()
+//                + booleanToBin(input.get(i+5)).toString(), 2
+//        );
+        int row = Integer.parseInt(
+                Integer.toString(booleanToBin(input.get(i)))
+                + Integer.toString(booleanToBin(input.get(i+5)))
+                , 2);
+        int column = Integer.parseInt(
+                Integer.toString(booleanToBin(input.get(i+1)))
+                + Integer.toString(booleanToBin(input.get(i+2)))
+                + Integer.toString(booleanToBin(input.get(i+3)))
+                + Integer.toString(booleanToBin(input.get(i+4)))
+                , 2);
+        int sBoxValue = sBox[row][column];
+        
+        List<Boolean> output = new ArrayList<>();
+        
+        int helperInt = sBoxValue%8;
+        output.add(helperInt > 0);
+        helperInt = helperInt %4;
+        output.add(helperInt > 0);
+        helperInt = helperInt %2;
+        output.add(helperInt > 0);
+        helperInt = helperInt %1;
+        output.add(helperInt > 0);
+        
+        return output;
+    }
+    
+    private static int booleanToBin(Boolean b){
+        return b ? 1 : 0;
+    }
 }
