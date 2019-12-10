@@ -5,7 +5,9 @@ import java.util.List;
 import static main.Servitor.binToHex;
 import static main.Servitor.doPermute;
 import static main.Servitor.hexToBin;
+import static main.Servitor.hexToPlain;
 import static main.Servitor.joinBlocks;
+import static main.Servitor.plainToHex;
 import static main.Servitor.splitToBlocks;
 import static main.Servitor.updateKey;
 import static tables.Permutations.FINAL_PERMUTATION;
@@ -34,12 +36,15 @@ public class Main{
     public static void main(String[] args){
         
         //Give message and key parametr
-        List<Boolean> msgEncoded = hexToBin("0123456789ABCDEF");
+        
+        List<Boolean> msgEncoded = hexToBin(plainToHex("PERLSUCK"));
+//        List<Boolean> msgEncoded = hexToBin("");
+//        List<Boolean> msgEncoded = hexToBin("c59565d5dc2d7810");
 //        List<Boolean> msgEncoded = hexToBin("85e813540f0ab405");
-        List<Boolean> keyEncoded = hexToBin("133457799BBCDFF1");
+//        List<Boolean> keyEncoded = hexToBin("FACCAA56AD663277");
+        List<Boolean> keyEncoded = hexToBin(plainToHex("Alabastr"));
         
         //Encrypt or decrypt?
-//        encrypt = false;
         encrypt = true;
         
         //Splits the message into 64-bit blocks
@@ -61,7 +66,7 @@ public class Main{
         
         for(List<Boolean> block: msgEncodedBlocks){
             
-            System.out.println("///***A BLOCK***///");
+            System.out.printf("%n%n%n///***A BLOCK***///%n%n");
             msgEncryptedBlocks.add(mainSequence(block));
         }
         
@@ -70,6 +75,8 @@ public class Main{
         
         System.out.printf("%n%S%n", "========================================");
         System.out.printf("%n %-20S %S%n", "output: ", binToHex(msgEncr));
+        System.out.printf("%n %-20S %S%n", "output inplain: "
+                , hexToPlain(binToHex(msgEncr)));
         System.out.printf("%n%S%n", "========================================");        
     }
 
