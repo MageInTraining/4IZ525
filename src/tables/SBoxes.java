@@ -7,7 +7,7 @@ package tables;
 
 /**
  *
- * @author stehl
+ * @author Milan Stehlík
  */
 public class SBoxes {
     public static int[][] S_BOX_1 =

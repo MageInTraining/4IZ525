@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package main;
 
 import java.util.ArrayList;
@@ -19,39 +14,66 @@ import static tables.Permutations.PC_1;
 
 /**
  *
- * @author cen62777
+ * @author Milan Stehlík
  */
 public class Main{
+    
+    
     
     static List<Boolean> rightSide;
     static List<Boolean> leftSide;
     static List<Boolean> leftKey;
     static List<Boolean> rightKey;
     
+    //whether to encrypt (TRUE) or decrypt (FALSE) 
+    static boolean encrypt; 
+    
+    //all the keyes to be used in algorithm
+    static List<List<Boolean>> keyRing;
+    
     public static void main(String[] args){
         
+        //Give message and key parametr
         List<Boolean> msgEncoded = hexToBin("0123456789ABCDEF");
+//        List<Boolean> msgEncoded = hexToBin("85e813540f0ab405");
         List<Boolean> keyEncoded = hexToBin("133457799BBCDFF1");
         
+        //Encrypt or decrypt?
+//        encrypt = false;
+        encrypt = true;
+        
+        //Splits the message into 64-bit blocks
         List<List<Boolean>> msgEncodedBlocks = splitToBlocks(msgEncoded);
+        
+        //fill keyRing array - keys for encryption AND decryption
+        List<Boolean> keyPermuted = doPermute(keyEncoded, PC_1);
+        leftKey = keyPermuted.subList(0, 28);
+        rightKey = keyPermuted.subList(28, 56);
+        
+        keyRing = new ArrayList<>();
+        for(int i = 0; i < 16; i++){
+            keyRing.add(Servitor.updateKey(leftKey, rightKey, i));
+        }
                 
+
+        //Go through Feistel Schema for each 64-bit block of encoded message
         List<List<Boolean>> msgEncryptedBlocks = new ArrayList<>();
         
-        //Go through Feistel Schema for each 64-bit block of encoded message
         for(List<Boolean> block: msgEncodedBlocks){
             
             System.out.println("///***A BLOCK***///");
-            msgEncryptedBlocks.add(mainSequence(block, keyEncoded));
+            msgEncryptedBlocks.add(mainSequence(block));
         }
         
         //Join all the encrypted blocks into output list
         List<Boolean> msgEncr = joinBlocks(msgEncryptedBlocks);
         
-        System.out.println("Encrypted message: " + binToHex(msgEncr));        
+        System.out.printf("%n%S%n", "========================================");
+        System.out.printf("%n %-20S %S%n", "output: ", binToHex(msgEncr));
+        System.out.printf("%n%S%n", "========================================");        
     }
 
-    private static List<Boolean> mainSequence(List<Boolean> block
-            , List<Boolean> keyEncoded) {
+    private static List<Boolean> mainSequence(List<Boolean> block) {
         
         List<Boolean> initialPermutation
                 = Servitor.doPermute(block, INITIAL_PERMUTATION);
@@ -62,21 +84,14 @@ public class Main{
         rightSide = initialPermutation.subList(32, 64);
         Servitor.booleanSTDReader(rightSide
                 , "    Right side after initial permutation");
-                
-        List<Boolean> keyPermuted = doPermute(keyEncoded, PC_1);
-        
-        leftKey = keyPermuted.subList(0, 28);
-        rightKey = keyPermuted.subList(28, 56);
         
         //go through all 16 rounds of Feistel Schema
         for(int i = 0; i < 16; i++){
             
-            //gets round key from key
-            //key itself is being modified inside run of the method
+            System.out.printf("%n    //**ROUND " + (i+1) + "**//%n");
+            
             //left and right side are being modified inside run of the method
-            System.out.println("    //**ROUND " + (i+1) + "**//");
-            Servitor.doRound(leftSide, rightSide
-                    , updateKey(leftKey, rightKey, i));
+            Servitor.doRound(i);
         }
         
         //final joining of left and right side of this 64-bit block

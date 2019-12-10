@@ -7,7 +7,7 @@ package tables;
 
 /**
  *
- * @author stehl
+ * @author Milan Stehlík
  */
 public class Shifts {
     

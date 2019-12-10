@@ -23,7 +23,7 @@ import static tables.Shifts.SHIFTS;
 
 /**
  *
- * @author stehl
+ * @author Milan Stehlík
  */
 public class Servitor {
     
@@ -171,30 +171,39 @@ public class Servitor {
         return helperList;
     }
     
-    public static void doRound(List<Boolean> leftSide, List<Boolean> rightSide
-            , List<Boolean> roundKey){
+    public static void doRound(int roundNumber){
         
         //temporary list for switching left and right side
         List<Boolean> rightHelper = Main.rightSide;
         
-        Main.rightSide = doXOR(leftSide
-                , doFeistelFunction(Main.rightSide, roundKey));
+        Main.rightSide = doXOR(Main.leftSide
+                , doFeistelFunction(Main.rightSide, roundNumber));
         Servitor.booleanSTDReader(Main.rightSide
                 , "        next Left side = this Right side");
         Main.leftSide= rightHelper;
     }
     
     public static List<Boolean> doFeistelFunction(List<Boolean> rightSide
-            , List<Boolean> roundKey){
+            , int roundNumber){
         
         List<Boolean> output= new ArrayList<>();
         
+        //do expansion, preparing input for Feistel function
         rightSide = doPermute(rightSide, EXPANSION);
-        
         Servitor.booleanSTDReader(rightSide, "        E(Right side)");
-        Servitor.booleanSTDReader(roundKey, "        Round key ");
         
-        List<Boolean> sBoxInput= doXOR(rightSide, roundKey);
+        
+        List<Boolean> sBoxInput = new ArrayList<>();
+        //figure out whether this is encryption or decryption
+        if(Main.encrypt){
+            Servitor.booleanSTDReader(Main.keyRing.get(roundNumber)
+                    , "        Round key ");        
+            sBoxInput = doXOR(rightSide, Main.keyRing.get(roundNumber));
+        }else{
+            Servitor.booleanSTDReader(Main.keyRing.get(15-roundNumber)
+                    , "        Round key ");        
+            sBoxInput = doXOR(rightSide, Main.keyRing.get(15-roundNumber));
+        }
         Servitor.booleanSTDReader(sBoxInput
                 , "        E(Right side) XOR roundKey");
         
@@ -271,15 +280,15 @@ public class Servitor {
         return b ? 1 : 0;
     }
     
-    public static void booleanSTDReader(List<Boolean> input, String whatIRead){
-        System.out.print(whatIRead + ", bit lenght: " + input.size() + ": ");
+    public static void booleanSTDReader(List<Boolean> input, String whatIRead){;
+        StringBuilder sb = new StringBuilder();
         for(Boolean b:input){
             if(b){
-                System.out.print("1");
+                sb.append('1');
             }else{
-                System.out.print("0");
+                sb.append('0');
             }
-        }
-        System.out.println("");
+        };
+        System.out.printf("%-50S %s %n", whatIRead, sb.toString());
     }
 }

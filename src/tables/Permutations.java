@@ -7,7 +7,7 @@ package tables;
 
 /**
  *
- * @author cen62777
+ * @author Milan Stehlík
  */
 public class Permutations {
     
