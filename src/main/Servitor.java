@@ -6,9 +6,7 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import static tables.Permutations.EXPANSION;
 import static tables.Permutations.PC_2;
@@ -21,7 +19,6 @@ import static tables.SBoxes.S_BOX_5;
 import static tables.SBoxes.S_BOX_6;
 import static tables.SBoxes.S_BOX_7;
 import static tables.SBoxes.S_BOX_8;
-import tables.Shifts;
 import static tables.Shifts.SHIFTS;
 
 /**
@@ -146,55 +143,74 @@ public class Servitor {
         rightKey = doShift(rightKey, SHIFTS[roundNumber]);
         
         //create round key basis
-        List<Boolean> roundKey = leftKey;
+        List<Boolean> roundKey = new ArrayList<>();
+        roundKey.addAll(leftKey);
         roundKey.addAll(rightKey);
         
         //return permuted basis - the actual round key
         Main.leftKey = leftKey;
         Main.rightKey = rightKey;
-        return doPermute(roundKey, PC_2);
+        
+        //output permutation
+        roundKey = doPermute(roundKey, PC_2);
+        
+        return roundKey;
     }
     
     public static List<Boolean> doShift(List<Boolean> list, int shiftBy){
         
-//        Collections.rotate(list, -shiftBy);
         List<Boolean> helperList = new ArrayList<>();
-        for(int j = 0; j < list.size(); j++){
-            if((j-shiftBy)>=0){
-                helperList.add(list.get(j-shiftBy));
+
+        for(int j = 0; j < (list.size()); j++){
+            if((j + shiftBy) < list.size()){
+                helperList.add(list.get(j + shiftBy));
             }else{
-                helperList.add(list.get(list.size()-shiftBy));
+                helperList.add(list.get(j + shiftBy - list.size()));
             }
         }
         return helperList;
-//        return list;
     }
     
     public static void doRound(List<Boolean> leftSide, List<Boolean> rightSide
             , List<Boolean> roundKey){
         
+        //temporary list for switching left and right side
         List<Boolean> rightHelper = Main.rightSide;
-        Main.rightSide = doXOR(leftSide, doFeistelFunction(Main.rightSide, roundKey));
+        
+        Main.rightSide = doXOR(leftSide
+                , doFeistelFunction(Main.rightSide, roundKey));
+        Servitor.booleanSTDReader(Main.rightSide
+                , "        next Left side = this Right side");
         Main.leftSide= rightHelper;
     }
     
     public static List<Boolean> doFeistelFunction(List<Boolean> rightSide
             , List<Boolean> roundKey){
         
+        List<Boolean> output= new ArrayList<>();
+        
         rightSide = doPermute(rightSide, EXPANSION);
         
-        List<Boolean> sBoxInput= doXOR(rightSide, roundKey);
+        Servitor.booleanSTDReader(rightSide, "        E(Right side)");
+        Servitor.booleanSTDReader(roundKey, "        Round key ");
         
-        return doPermute(useSBoxes(sBoxInput), P_PERMUTATION);
+        List<Boolean> sBoxInput= doXOR(rightSide, roundKey);
+        Servitor.booleanSTDReader(sBoxInput
+                , "        E(Right side) XOR roundKey");
+        
+        output = doPermute(useSBoxes(sBoxInput), P_PERMUTATION);
+        Servitor.booleanSTDReader(output, "        f(rightSide, roundKey)");
+        
+        return output;
     }
     
-    public static List<Boolean> doXOR(List<Boolean> rightSide
-            , List<Boolean> roundKey){
+    public static List<Boolean> doXOR(List<Boolean> listOne
+            , List<Boolean> listTwo){
         
         List<Boolean> output = new ArrayList<>();
         
-        for(int i = 0; i< Main.rightSide.size()-1; i++){
-            output.add(! Main.rightSide.get(i).equals(roundKey.get(i)));
+        for(int i = 0; i< listOne.size(); i++){
+            output.add(! listOne.get(i).equals(listTwo.get(i)));
         }
         
         return output;
@@ -213,6 +229,7 @@ public class Servitor {
         output.addAll(useSBox(S_BOX_7, input, 36));
         output.addAll(useSBox(S_BOX_8, input, 42));
         
+        Servitor.booleanSTDReader(output, "        sBox output");
         return output;
     }
 
@@ -237,19 +254,32 @@ public class Servitor {
         
         List<Boolean> output = new ArrayList<>();
         
-        int helperInt = sBoxValue%8;
-        output.add(helperInt > 0);
-        helperInt = helperInt %4;
-        output.add(helperInt > 0);
-        helperInt = helperInt %2;
-        output.add(helperInt > 0);
-        helperInt = helperInt %1;
-        output.add(helperInt > 0);
+        int helperInt = sBoxValue;
+        
+        output.add((helperInt / 8) > 0);
+        helperInt = helperInt % 8;
+        output.add((helperInt / 4) > 0);
+        helperInt = helperInt % 4;
+        output.add((helperInt / 2) > 0);
+        helperInt = helperInt % 2;
+        output.add((helperInt / 1) > 0);
         
         return output;
     }
     
     private static int booleanToBin(Boolean b){
         return b ? 1 : 0;
+    }
+    
+    public static void booleanSTDReader(List<Boolean> input, String whatIRead){
+        System.out.print(whatIRead + ", bit lenght: " + input.size() + ": ");
+        for(Boolean b:input){
+            if(b){
+                System.out.print("1");
+            }else{
+                System.out.print("0");
+            }
+        }
+        System.out.println("");
     }
 }
