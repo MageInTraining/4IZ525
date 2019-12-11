@@ -81,9 +81,18 @@ public class Servitor {
         
         //add random values to reach block size of 64 bit
         if(input.size()%64 != 0){
-            int toAdd = 64 - input.size()%64;
+            int toAdd = (64-(input.size()%8))/8;
+//            int toAdd = 64 - input.size()%64;
             for(int i = 0; i < toAdd; i++){
-                input.add( Math.random() < 0.5);
+//                input.add( Math.random() < 0.5);
+                 input.add(false);
+                 input.add(true);
+                 input.add(false);
+                 input.add(true);
+                 input.add(true);
+                 input.add(true);
+                 input.add(true);
+                 input.add(true);
             }
         }
         

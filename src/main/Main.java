@@ -37,15 +37,15 @@ public class Main{
         
         //Give message and key parametr
         
-        List<Boolean> msgEncoded = hexToBin(plainToHex("PERLSUCK"));
-//        List<Boolean> msgEncoded = hexToBin("");
-//        List<Boolean> msgEncoded = hexToBin("c59565d5dc2d7810");
+//        List<Boolean> msgEncoded = hexToBin(plainToHex("PERLSUCK"));
+//        List<Boolean> msgEncoded = hexToBin("f9f5ccbd3ec0e2e1d6761c250e525221");
+        List<Boolean> msgEncoded = hexToBin(plainToHex("suck me like java"));
 //        List<Boolean> msgEncoded = hexToBin("85e813540f0ab405");
 //        List<Boolean> keyEncoded = hexToBin("FACCAA56AD663277");
         List<Boolean> keyEncoded = hexToBin(plainToHex("Alabastr"));
         
         //Encrypt or decrypt?
-        encrypt = true;
+        encrypt = false;
         
         //Splits the message into 64-bit blocks
         List<List<Boolean>> msgEncodedBlocks = splitToBlocks(msgEncoded);
